@@ -1,0 +1,60 @@
+directives = [
+    "base-uri",
+    "child-src",
+    "connect-src",
+    "default-src",
+    "font-src",
+    "form-action",
+    "frame-ancestors",
+    "frame-src",
+    "img-src",
+    "manifest-src",
+    "media-src",
+    "navigate-to",
+    "object-src",
+    "plugin-types",
+    "prefetch-src",
+    "report-to",
+    "report-uri",
+    "sandbox",
+    "script-src",
+    "style-src",
+    "worker-src"
+]
+
+src_directives = [
+    "*",
+    "'none'",
+    "'self'",
+    "data:",
+    "https:",
+    "'unsafe-inline'",
+    "'unsafe-eval'",
+    "'strict-dynamic'",
+    "'unsafe-hashes'"
+]
+
+[weights]
+    "*"                = "01"
+    "'none'"           = "02"
+    "'self'"           = "03"
+    "data:"            = "04"
+    "https:"           = "05"
+    "'unsafe-inline'"  = "06"
+    "'strict-dynamic'" = "07"
+    "'unsafe-eval'"    = "08"
+    "'unsafe-hashes'"  = "09"
+
+sandbox_flags = [
+    "allow-scripts",
+    "allow-forms",
+    "allow-modals",
+    "allow-orientation-lock",
+    "allow-pointer-lock",
+    "allow-popups",
+    "allow-popups-to-escape-sandbox",
+    "allow-presentation",
+    "allow-top-navigation",
+    "allow-downloads",
+    "allow-same-origin"
+]

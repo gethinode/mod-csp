@@ -1,0 +1,108 @@
+{{- $header := .header -}}
+
+{{/* Define supported directives */}}
+{{- $directives := site.Data.csp_definitions.directives -}}
+{{- if not $directives -}}
+    {{- errorf "Missing definitions for CSP directives, check 'data/csp_definitions.toml'"}}
+{{- end -}}
+
+{{/* Define preferred order of '-src' value */}}
+{{- $weights := site.Data.csp_definitions.weights -}}
+{{- if not $weights -}}
+    {{- errorf "Missing weight definitions for CSP values, check 'data/csp_definitions.toml'"}}
+{{- end -}}
+
+{{/* Define supported flags for 'sandbox' directive */}}
+{{- $sandboxflags := site.Data.csp_definitions.weights.sandbox_flags -}}
+{{- if not $sandboxflags -}}
+    {{- errorf "Missing supported 'sandbox' flags, check 'data/csp_definitions.toml'"}}
+{{- end -}}
+
+{{- $settings := dict -}}
+{{- $headers := dict -}}
+
+{{/* Obtain the default CSP settings */}}
+{{- $server := site.Data.server -}}
+{{- $plain := transform.Remarshal "toml" $server -}}
+{{- $cspInput := (index (findRE `Content-Security-Policy.*` $plain) 0) -}}
+{{- $csp := transform.Unmarshal $cspInput -}}
+
+{{- $split := (split (index $csp "Content-Security-Policy") ";") -}}
+{{- range $split -}}
+    {{- $row := split (trim . " ") " " -}}
+    {{- $key := index $row 0 -}}
+    {{- $val := last (sub (len $row) 1) $row -}}
+    {{- $settings = merge $settings (dict $key $val)}}
+{{- end -}}
+
+{{/* Iterate over the directives and their values, flagging incorrect settings */}}
+{{- range $mod, $cfg := site.Params.modules -}}
+    {{- $csp := index $cfg "csp" -}}
+    {{- range $key, $vals := $csp -}}
+        {{- if not (in $directives $key) -}}
+            {{- warnf "Unrecognized CSP directive '%s' in module '%s'" $key $mod -}}
+        {{- end -}}
+
+        {{- if hasSuffix $key "-src" -}}
+            {{- $results := partial "assets/server-headers-valid-src.html" (dict "key" $key "mod" $mod "settings" $settings "vals" $vals) -}}
+            {{- $settings = merge $settings $results -}}
+        {{- else if eq $key "sandbox" -}}
+            {{- range $val := $vals -}}
+                {{- if not (in $sandboxflags .) -}}
+                    {{- warnf "Unsupported flag '%s' for directive '%s' in module '%s'" $val $key $mod -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
+
+        {{- if not (hasSuffix $key "-src") -}}
+            {{- $settings = merge $settings (dict $key $vals) -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{/* Sort the directive's values by weight */}}
+{{- range $key, $values := $settings -}}
+    {{- if hasSuffix $key "-src" -}}
+        {{- $weight := index $weights -}}
+        {{- $data := dict -}}
+        {{- $sorted := slice -}}
+
+        {{- range $values -}}
+            {{- $weight := index $weights . | default (printf "99 %s" . | lower) -}}
+            {{- $data = merge $data (dict $weight .) -}}
+        {{- end -}}
+
+        {{- range $k, $v := $data -}}
+            {{- $sorted = $sorted | append $v -}}
+        {{- end -}}
+
+        {{- $headers = merge $headers (dict $key (delimit $sorted " ")) -}}
+    {{- else -}}
+        {{- $headers = merge $headers (dict $key (delimit $values " ")) -}}
+    {{- end -}}
+{{- end -}}
+
+{{/* Flatten the settings and write them to the output */}}
+{{- warnf "Generating server headers: %s" page.RelPermalink -}}
+{{- $flatten := "" -}}
+{{- range $k, $v := $settings -}}
+    {{- $flatten = printf "%s        %s %s; \\\n" $flatten $k (delimit $v " ") -}}
+{{- end -}}
+
+{{- $cspTarget := printf "Content-Security-Policy = \"\"\"\n        %s        \"\"\"" (trim $flatten " ") -}}
+{{- $plain = replace $plain $cspInput $cspTarget 1 -}}
+{{- print "# Auto-generated file - do not modify\n" -}}
+
+{{- $source := "" -}}
+{{- if $header -}}
+    {{- $source = (index site.Params.headers $header).source  -}}
+{{- end -}}
+{{- if $source -}}
+    {{- with index site.Data (path.BaseName $source) -}}
+        {{- print (transform.Remarshal "toml" .) | safeHTML -}}
+    {{- else -}}
+        {{- warnf "[assets/server-headers.html] Cannot find source data: %s" (path.Join "data" $source) -}}
+    {{- end -}}
+{{- end -}}
+{{- println -}}
+{{- print $plain | safeHTML -}}

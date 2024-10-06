@@ -1,0 +1,76 @@
+{{- $results := .settings -}}
+{{- $key := .key -}}
+{{- $mod := .mod -}}
+{{- $vals := .vals -}}
+
+{{/* Define supported values for '-src' directives (excluding sha26, nonce and domains) */}}
+{{- $srclist := site.Data.csp_definitions.src_directives -}}
+{{- if not $srclist -}}
+    {{- errorf "Missing supported '-src' values, check 'data/csp_definitions.toml'"}}
+{{- end -}}
+
+{{- $validations := slice
+    "'*'"
+    "none"
+    "self"
+    "unsafe-inline"
+    "unsafe-eval"
+    "strict-dynamic"
+    "unsafe-hashes"
+-}}
+
+{{- range $val := $vals -}}
+    {{/* Test if the value is a keyword */}}
+    {{- $valid := in $srclist $val -}}
+
+    {{/* Warn for potentially incorrect use of single quotes */}}
+    {{- if in $validations $val -}}
+        {{- warnf "Possibly incorrect use of quotes for directive '%s' in module '%s': %s" $key $mod $val -}}
+    {{- end -}}
+
+    {{/* Test if the value is a supported hash value */}}
+    {{- if not $valid -}}
+        {{- $valid = eq (index (findRE `'sha256-[!-~]+'` $val) 0) $val -}}
+    {{- end -}}
+
+    {{/* Test if the value is a supported nonce value */}}
+    {{- if not $valid -}}
+        {{- $valid = eq (index (findRE `'nonce-[!-~]+'` $val) 0) $val -}}
+    {{- end -}}
+
+    {{/* Test if the value is a recognized relative or absolute domain */}}
+    {{- if not $valid -}}
+        {{- $url := "" -}}
+        {{- $error := false -}}
+        {{- $split := split $val "//" -}}
+        {{- if eq (len $split) 1 -}}
+            {{- if ne $val (urlize $val) -}}
+                {{- $error = true -}}
+            {{- else -}}
+                {{- $url = urls.Parse (printf "//%s" $val) -}}
+            {{- end -}}
+        {{- else if eq (len $split) 2 -}}
+            {{- if ne (index $split 1) (urlize (index $split 1)) -}}
+                {{- $error = true -}}
+            {{- else -}}
+                {{- $url = urls.Parse $val -}}
+            {{- end -}}
+        {{- else -}}
+            {{- $error = true -}}
+        {{- end -}}
+
+        {{- if not $error -}}
+            {{- $valid = and $url.Hostname (eq $url.RequestURI "/") -}}
+        {{- end -}}
+    {{- end -}}
+
+    {{- if not $valid -}}
+        {{- warnf "Unsupported source value '%s' for directive '%s' in module '%s'" $val $key $mod -}}
+    {{- else -}}
+        {{- $current := index $results $key | default slice -}}
+        {{- $target := union $current (slice $val) -}}
+        {{- $results = merge $results (dict $key $target) -}}
+    {{- end -}}
+{{- end -}}
+
+{{- return $results -}}

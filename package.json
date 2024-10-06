@@ -1,7 +1,7 @@
 {
-  "name": "@gethinode/mod-template",
+  "name": "@gethinode/mod-csp",
   "version": "0.0.0",
-  "description": "A template to define a Hugo module compatible with Hinode",
+  "description": "A Hugo module to generate Content Security Policies for your Hinode site (work in progress)",
   "keywords": [
     "hugo",
     "module"
@@ -15,20 +15,21 @@
     "prestart": "npm run clean && npm run mod:vendor",
     "start": "hugo server -s exampleSite --bind=0.0.0.0 --disableFastRender --printI18nWarnings",
     "prebuild": "npm run clean && npm run mod:vendor",
-    "build": "hugo --gc --minify -s exampleSite",
+    "build": "hugo --gc",
+    "build:example": "hugo --gc --minify -s exampleSite -d ../prebuild",
     "clean": "rimraf exampleSite/public exampleSite/resources",
     "mod:clean": "hugo mod clean",
     "mod:update": "rimraf _vendor && hugo mod get -u ./... && hugo mod get -u && npm run -s mod:vendor && npm run -s mod:tidy",
     "mod:tidy": "hugo mod tidy",
     "mod:vendor": "rimraf _vendor && hugo mod vendor",
     "postinstall": "echo TODO: add postinstall instructions",
-    "test": "npm run -s build",
+    "test": "npm run -s build:example",
     "upgrade": "npx npm-check-updates -u && npm run -s mod:update",
     "prepare": "node .husky/install.mjs"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gethinode/mod-template.git"
+    "url": "git+https://github.com/gethinode/mod-csp.git"
   },
   "author": "Mark Dumay",
   "license": "MIT",

@@ -1,15 +1,68 @@
 baseURL = 'http://example.org/'
 languageCode = 'en-us'
-title = 'Test site for mod-template'
+title = 'Test site for mod-csp'
+
+[outputFormats]
+  [outputFormats.headers]
+    mediaType = "application/toml"
+    baseName = "netlify"
+    isPlainText = true
+    notAlternative = true
+    permalinkable = true
+  [outputFormats.server]
+    mediaType = "application/toml"
+    baseName = "server"
+    isPlainText = true
+    notAlternative = true
+    permalinkable = true
+
+[outputs]
+home = ["headers", "server"]
+
+[params.modules]
+[params.modules.mod-one.csp]
+    script-src = [
+        "'self'",
+        "data:",
+        "one.com"
+    ]
+
+[params.modules.mod-two.csp]
+    script-src = [
+        "//two.com",
+        "https:"
+    ]
+    style-src = [
+        "'self'",
+        "'sha256-456'"
+    ]
+
+[params.modules.mod-three.csp]
+    script-src = [
+        "https://three.com"
+    ]
+    style-src = [
+        "'unsafe-inline'",
+        "https://style.com",
+        "'self'",
+        "'sha256-123'"
+    ]
+    sandbox = [
+        "allow-same-origin"
+    ]
+
+[params.headers]
+  [params.headers.server]
+  [params.headers.netlify]
+    source = "netlify.toml"
 
 [module]
-  # Build and serve using local mod-template clone declared in the named Hugo workspace:
-  workspace = "mod-template.work"
+  workspace = "mod-csp.work"
   [[module.imports]]
-    path = "github.com/gethinode/mod-template"
+    path = "github.com/gethinode/mod-csp"
   [[module.imports.mounts]]
-    source = "dist"
-    target = "static"
+    source = "data"
+    target = "data"
   [[module.imports.mounts]]
     source = "layouts"
     target = "layouts"
