@@ -1,5 +1,5 @@
 [outputFormats]
-  [outputFormats.headers]
+  [outputFormats.netlify]
     mediaType = "application/toml"
     baseName = "netlify.toml"
     isPlainText = true
@@ -13,7 +13,7 @@
     permalinkable = true
 
 [outputs]
-home = ["headers", "server"]
+  home = ["netlify", "server"]
 
 [module]
   [module.hugoVersion]
