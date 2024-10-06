@@ -44,16 +44,22 @@
         {{- $error := false -}}
         {{- $split := split $val "//" -}}
         {{- if eq (len $split) 1 -}}
-            {{- if ne $val (urlize $val) -}}
+            {{- $tempval := strings.TrimPrefix "*." $val -}}
+            {{- if ne $tempval (urlize $tempval) -}}
                 {{- $error = true -}}
             {{- else -}}
-                {{- $url = urls.Parse (printf "//%s" $val) -}}
+                {{- $url = urls.Parse (printf "//%s" $tempval) -}}
             {{- end -}}
         {{- else if eq (len $split) 2 -}}
-            {{- if ne (index $split 1) (urlize (index $split 1)) -}}
+            {{- $tempval := strings.TrimPrefix "*." (index $split 1) -}}
+            {{- if ne $tempval (urlize $tempval) -}}
                 {{- $error = true -}}
             {{- else -}}
-                {{- $url = urls.Parse $val -}}
+                {{ if gt (len (index $split 0)) 0 }}
+                    {{- $url = urls.Parse (urls.JoinPath (index $split 0) $tempval) -}}
+                {{ else }}
+                    {{- $url = urls.Parse (printf "//%s" $tempval) -}}
+                {{ end }}
             {{- end -}}
         {{- else -}}
             {{- $error = true -}}
