@@ -3,7 +3,7 @@ languageCode = 'en-us'
 title = 'Test site for mod-csp'
 
 [outputFormats]
-  [outputFormats.headers]
+  [outputFormats.netlify]
     mediaType = "application/toml"
     baseName = "netlify"
     isPlainText = true
@@ -17,7 +17,7 @@ title = 'Test site for mod-csp'
     permalinkable = true
 
 [outputs]
-home = ["headers", "server"]
+home = ["netlify", "server"]
 
 [params.modules]
 [params.modules.mod-one.csp]
