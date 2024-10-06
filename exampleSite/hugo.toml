@@ -51,6 +51,21 @@ home = ["netlify", "server"]
         "allow-same-origin"
     ]
 
+[params.modules.GoogleAnalytics.csp]
+  script-src = [
+      "*.google-analytics.com",
+      "*.googletagmanager.com"
+  ]
+  connect-src = [
+      "*.google-analytics.com",
+      "*.analytics.google.com",
+      "*.googletagmanager.com"
+  ]
+  img-src = [
+      "*.google-analytics.com",
+      "*.googletagmanager.com"
+  ]
+
 [params.headers]
   [params.headers.server]
   [params.headers.netlify]
