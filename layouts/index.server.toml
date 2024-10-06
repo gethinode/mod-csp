@@ -1,0 +1,1 @@
+{{ partial "assets/server-headers.html" (dict "header" (path.BaseName .RelPermalink)) }}

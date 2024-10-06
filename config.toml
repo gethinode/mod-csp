@@ -1,14 +1,28 @@
+[outputFormats]
+  [outputFormats.headers]
+    mediaType = "application/toml"
+    baseName = "netlify.toml"
+    isPlainText = true
+    notAlternative = true
+    permalinkable = true
+  [outputFormats.server]
+    mediaType = "application/toml"
+    baseName = "server.toml"
+    isPlainText = true
+    notAlternative = true
+    permalinkable = true
+
+[outputs]
+home = ["headers", "server"]
+
 [module]
   [module.hugoVersion]
     extended = true
     min = "0.110.0"
     max = ""
   [[module.mounts]]
+    source = 'data'
+    target = 'data'
+  [[module.mounts]]
     source = 'layouts'
     target = 'layouts'
-  [[module.mounts]]
-    source = 'assets'
-    target = 'assets'
-  [[module.mounts]]
-    source = 'static'
-    target = 'static'

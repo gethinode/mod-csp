@@ -1,8 +1,10 @@
 /_vendor
 /public
+/prebuild
 /resources
 node_modules/
 exampleSite/public
+exampleSite/prebuild
 exampleSite/resources
 
 .DS_store
