@@ -1,6 +1,6 @@
 {
   "name": "@gethinode/mod-csp",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A Hugo module to generate Content Security Policies for your Hinode site (work in progress)",
   "keywords": [
     "hugo",
