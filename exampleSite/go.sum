@@ -6,3 +6,5 @@ github.com/gethinode/mod-csp v1.0.4 h1:ChI+DMkkkCF5tKs+K9VSqdsXPS01/QANQiJ2LoJp1
 github.com/gethinode/mod-csp v1.0.4/go.mod h1:Nb22QMicoUHgZQUKP5TCgVrSI8K3KU7jLuLBShmotjg=
 github.com/gethinode/mod-csp v1.0.5 h1:Ypdzw26iQ9/4sAgHvwFY1mg/EMoLrcI2knvVmHq2Ffs=
 github.com/gethinode/mod-csp v1.0.5/go.mod h1:Nb22QMicoUHgZQUKP5TCgVrSI8K3KU7jLuLBShmotjg=
+github.com/gethinode/mod-csp v1.0.6 h1:ufEKQldQe9ZCXbENTpwqVlYnPRgVv3WDhPjur5OLUEA=
+github.com/gethinode/mod-csp v1.0.6/go.mod h1:Nb22QMicoUHgZQUKP5TCgVrSI8K3KU7jLuLBShmotjg=
