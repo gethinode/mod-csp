@@ -55,7 +55,9 @@
         {{- end -}}
 
         {{- if not (hasSuffix $key "-src") -}}
-            {{- $settings = merge $settings (dict $key $vals) -}}
+            {{- $current := index $settings $key | default slice -}}
+            {{- $target := union $current $vals -}}
+            {{- $settings = merge $settings (dict $key $target) -}}
         {{- end -}}
     {{- end -}}
 {{- end -}}
