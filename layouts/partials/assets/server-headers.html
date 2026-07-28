@@ -85,7 +85,7 @@
 {{- end -}}
 
 {{/* Flatten the settings and write them to the output */}}
-{{- warnf "Generating server headers: %s" page.RelPermalink -}}
+{{- warnidf "warn-generate-server-headers" "Generating server headers: %s" page.RelPermalink -}}
 {{- $flatten := "" -}}
 {{- range $k, $v := $settings -}}
     {{- $flatten = printf "%s        %s %s; \\\n" $flatten $k (delimit $v " ") -}}
