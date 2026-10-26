@@ -14,3 +14,5 @@ minimumReleaseAgeExclude:
 # versions without assistance.
 overrides:
   adm-zip: ">=0.6.1"
+  # fast-uri: Ajv URI scheme, host, and reference validation advisories.
+  fast-uri@3: "^3.1.9"
