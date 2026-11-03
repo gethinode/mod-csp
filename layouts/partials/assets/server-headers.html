@@ -1,19 +1,27 @@
 {{- $header := .header -}}
 
+{{/* hugo.Data replaces site.Data from Hugo v0.156.0; the guard keeps older Hugo (e.g. CloudCannon live editing, v0.147.6) working */}}
+{{- $data := dict -}}
+{{- if le (hugo.Version.Compare "0.156.0") 0 -}}
+    {{- $data = hugo.Data -}}
+{{- else -}}
+    {{- $data = site.Data -}}
+{{- end -}}
+
 {{/* Define supported directives */}}
-{{- $directives := site.Data.csp_definitions.directives -}}
+{{- $directives := $data.csp_definitions.directives -}}
 {{- if not $directives -}}
     {{- errorf "Missing definitions for CSP directives, check 'data/csp_definitions.toml'"}}
 {{- end -}}
 
 {{/* Define preferred order of '-src' value */}}
-{{- $weights := site.Data.csp_definitions.weights -}}
+{{- $weights := $data.csp_definitions.weights -}}
 {{- if not $weights -}}
     {{- errorf "Missing weight definitions for CSP values, check 'data/csp_definitions.toml'"}}
 {{- end -}}
 
 {{/* Define supported flags for 'sandbox' directive */}}
-{{- $sandboxflags := site.Data.csp_definitions.weights.sandbox_flags -}}
+{{- $sandboxflags := $data.csp_definitions.weights.sandbox_flags -}}
 {{- if not $sandboxflags -}}
     {{- errorf "Missing supported 'sandbox' flags, check 'data/csp_definitions.toml'"}}
 {{- end -}}
@@ -22,7 +30,7 @@
 {{- $headers := dict -}}
 
 {{/* Obtain the default CSP settings */}}
-{{- $server := site.Data.server -}}
+{{- $server := $data.server -}}
 {{- $plain := transform.Remarshal "toml" $server -}}
 {{- $cspInput := (index (findRE `Content-Security-Policy.*` $plain) 0) -}}
 {{- $csp := transform.Unmarshal $cspInput -}}
@@ -100,7 +108,7 @@
     {{- $source = (index site.Params.headers $header).source  -}}
 {{- end -}}
 {{- if $source -}}
-    {{- with index site.Data (path.BaseName $source) -}}
+    {{- with index $data (path.BaseName $source) -}}
         {{- print (transform.Remarshal "toml" .) | safeHTML -}}
     {{- else -}}
         {{- warnf "[assets/server-headers.html] Cannot find source data: %s" (path.Join "data" $source) -}}
