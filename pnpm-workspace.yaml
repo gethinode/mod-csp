@@ -16,3 +16,7 @@ overrides:
   adm-zip: ">=0.6.1"
   # fast-uri: Ajv URI scheme, host, and reference validation advisories.
   fast-uri@3: "^3.1.9"
+
+# Select standard Hugo archives from 0.170.0 and Extended archives for older Hugo.
+patchedDependencies:
+  hugo-extended@0.170.0: patches/hugo-extended@0.170.0.patch
